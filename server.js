@@ -53,8 +53,8 @@ app.use((req, res, next) => {
   console.log(`[HTTP] ${req.method} ${req.url}`);
   next();
 });
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+app.use(express.json({ limit: '15mb' }));
+app.use(express.urlencoded({ extended: true, limit: '15mb' }));
 
 import fs from 'fs';
 
@@ -84,12 +84,21 @@ app.get('/api', (req, res) => {
   });
 });
 
-// Routes
+// Routes (support both /api/path and /path for Vercel serverless rewrites)
 app.use('/api/auth', authRoutes);
+app.use('/auth', authRoutes);
+
 app.use('/api/orders', orderRoutes);
+app.use('/orders', orderRoutes);
+
 app.use('/api/users', userRoutes);
+app.use('/users', userRoutes);
+
 app.use('/api/pricing', pricingRoutes);
+app.use('/pricing', pricingRoutes);
+
 app.use('/api/settings', settingsRoutes);
+app.use('/settings', settingsRoutes);
 
 // Fallback to React frontend index.html if dist exists
 if (hasDist) {
